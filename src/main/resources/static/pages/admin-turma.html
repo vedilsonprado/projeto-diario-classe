@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Nova Turma - Diário de Classe</title>
+	<link rel="stylesheet" href="../style/style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+	<header class="main-header">
+		<div class="header-left">
+			<div class="logo">
+				<a href="../index.html" class="btn-settings" title="Painel Administrativo">
+					<img src="../img/SENAI_logo.png" alt="Logo" class="header-logo">
+				</a>
+			</div>
+			<span class="system-title">Cadastro de Turma</span>
+		</div>
+		<div class="header-right">
+			<a href="admin.html" class="btn-settings" title="Voltar"><i class="fas fa-arrow-left"></i></a>
+		</div>
+	</header>
+
+	<div class="admin-container">
+
+		<div class="form-section">
+			<h3><i class="fas fa-users"></i> Dados da Turma</h3>
+			<div class="form-row">
+				<div class="input-group" style="flex: 2;">
+					<label>Nome da Turma</label>
+					<input type="text" id="nomeTurma" placeholder="Ex: Desenvolvimento de Sistemas">
+				</div>
+				<div class="input-group" style="flex: 1;">
+					<label>Semestre</label>
+					<input type="text" id="anoSemestre" placeholder="Ex: 2025/1">
+				</div>
+			</div>
+		</div>
+
+		<div class="form-section">
+			<h3><i class="fas fa-book"></i> Vincular Unidades Curriculares</h3>
+			<p class="section-desc">Selecione as matérias que esta turma irá cursar:</p>
+			<div id="container-ucs" class="ucs-grid">
+				<p>Carregando UCs...</p>
+			</div>
+		</div>
+
+		<div class="form-section">
+			<h3><i class="fas fa-user-graduate"></i> Adicionar Alunos (Opcional)</h3>
+			<div id="lista-alunos">
+			</div>
+
+			<button class="btn-add-row" onclick="adicionarLinhaAluno()">
+				<i class="fas fa-plus"></i> Adicionar Linha
+			</button>
+		</div>
+
+		<div class="form-actions">
+			<button class="btn-cancel" onclick="window.location.href='admin.html'">Cancelar</button>
+			<button class="btn-save-all" onclick="salvarTudo()">Salvar Turma Completa</button>
+		</div>
+
+	</div>
+
+	<script src="../script/admin-turma.js"></script>
+</body>
+
+</html>

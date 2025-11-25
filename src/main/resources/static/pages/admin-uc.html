@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Nova Unidade Curricular - Diário de Classe</title>
+	<link rel="stylesheet" href="../style/style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+	<header class="main-header">
+		<div class="header-left">
+			<div class="logo">
+				<a href="../index.html" class="btn-settings" title="Painel Administrativo">
+					<img src="../img/SENAI_logo.png" alt="Logo" class="header-logo">
+				</a>
+			</div>
+			<span class="system-title">Cadastro de Unidade Curricular</span>
+		</div>
+		<div class="header-right">
+			<a href="admin.html" class="btn-settings" title="Voltar"><i class="fas fa-arrow-left"></i></a>
+		</div>
+	</header>
+
+	<div class="admin-container">
+
+		<div class="form-section">
+			<h3><i class="fas fa-book"></i> Dados da Matéria</h3>
+			<div class="form-row">
+				<div class="input-group" style="flex: 3;">
+					<label>Nome da Unidade Curricular</label>
+					<input type="text" id="nomeUC" placeholder="Ex: Banco de Dados Relacional">
+				</div>
+				<div class="input-group" style="flex: 1;">
+					<label>Carga Horária (h)</label>
+					<input type="number" id="cargaHoraria" placeholder="Ex: 80">
+				</div>
+			</div>
+		</div>
+
+		<div class="form-section">
+			<h3><i class="fas fa-tasks"></i> Critérios de Avaliação</h3>
+			<p class="section-desc">Defina o que será avaliado nesta matéria.</p>
+
+			<div id="lista-criterios">
+			</div>
+
+			<button class="btn-add-row" onclick="adicionarLinhaCriterio()">
+				<i class="fas fa-plus"></i> Adicionar Critério
+			</button>
+		</div>
+
+		<div class="form-actions">
+			<button class="btn-cancel" onclick="window.location.href='admin.html'">Cancelar</button>
+			<button class="btn-save-all" onclick="salvarTudo()">Salvar Unidade Curricular</button>
+		</div>
+
+	</div>
+
+	<script src="../script/admin-uc.js"></script>
+</body>
+
+</html>

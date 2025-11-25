@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Painel Administrativo - Diário de Classe</title>
+	<link rel="stylesheet" href="../style/style.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+	<header class="main-header">
+		<div class="header-left">
+			<div class="logo">
+				<a href="../index.html" class="btn-settings" title="Painel Administrativo">
+					<img src="../img/SENAI_logo.png" alt="Logo" class="header-logo">
+				</a>
+			</div>
+			<span class="system-title">Diário de Classe</span>
+		</div>
+		<div class="header-right">
+			<a href="./pages/admin.html" class="btn-settings" title="Painel Administrativo">
+				<i class="fas fa-cog"></i>
+			</a>
+		</div>
+	</header>
+
+	<div class="admin-container">
+
+		<div class="admin-welcome">
+			<h2>Gerenciamento do Sistema</h2>
+			<p>Selecione uma opção abaixo para iniciar um cadastro</p>
+		</div>
+
+		<div class="admin-grid">
+
+			<div class="admin-card">
+				<div class="icon-container">
+					<i class="fas fa-users"></i>
+				</div>
+				<h3>Turmas</h3>
+				<p>Gerencie as turmas e semestres.</p>
+				<div class="card-actions">
+					<button class="btn-admin btn-add" onclick="gerenciar('turma', 'adicionar')">
+						<i class="fas fa-plus"></i> Adicionar
+					</button>
+					<button class="btn-admin btn-list" onclick="gerenciar('turma', 'listar')">
+						<i class="fas fa-list"></i> Listar
+					</button>
+				</div>
+			</div>
+
+			<div class="admin-card">
+				<div class="icon-container">
+					<i class="fas fa-user-graduate"></i>
+				</div>
+				<h3>Alunos</h3>
+				<p>Cadastre alunos e matrículas.</p>
+				<div class="card-actions">
+					<button class="btn-admin btn-add" onclick="gerenciar('aluno', 'adicionar')">
+						<i class="fas fa-plus"></i> Adicionar
+					</button>
+					<button class="btn-admin btn-list" onclick="gerenciar('aluno', 'listar')">
+						<i class="fas fa-list"></i> Listar
+					</button>
+				</div>
+			</div>
+
+			<div class="admin-card">
+				<div class="icon-container">
+					<i class="fas fa-book"></i>
+				</div>
+				<h3>Unidades Curriculares</h3>
+				<p>Matérias e módulos do curso.</p>
+				<div class="card-actions">
+					<button class="btn-admin btn-add" onclick="gerenciar('uc', 'adicionar')">
+						<i class="fas fa-plus"></i> Adicionar
+					</button>
+					<button class="btn-admin btn-list" onclick="gerenciar('uc', 'listar')">
+						<i class="fas fa-list"></i> Listar
+					</button>
+				</div>
+			</div>
+
+			<div class="admin-card">
+				<div class="icon-container">
+					<i class="fas fa-tasks"></i>
+				</div>
+				<h3>Critérios</h3>
+				<p>Regras de avaliação (CC/CD).</p>
+				<div class="card-actions">
+					<button class="btn-admin btn-add" onclick="gerenciar('criterio', 'adicionar')">
+						<i class="fas fa-plus"></i> Adicionar
+					</button>
+					<button class="btn-admin btn-list" onclick="gerenciar('criterio', 'listar')">
+						<i class="fas fa-list"></i> Listar
+					</button>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<script src="../script/admin.js"></script>
+</body>
+
+</html>
