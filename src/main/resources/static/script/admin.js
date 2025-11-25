@@ -23,13 +23,13 @@ function gerenciar(entidade, acao) {
 	} else if (acao === 'listar') {
 		switch (entidade) {
 			case 'turma':
-				alert("Exibir lista de todas as Turmas (Tabela)");
+				window.location.href = 'admin-turma-lista.html';
 				break;
 			case 'aluno':
-				alert("Exibir lista de todos os Alunos (Tabela)");
+				window.location.href = 'admin-aluno-lista.html';
 				break;
 			case 'uc':
-				alert("Exibir lista de Unidades Curriculares");
+				window.location.href = 'admin-uc-lista.html';
 				break;
 			case 'criterio':
 				alert("Exibir lista de Critérios");

@@ -5,6 +5,7 @@ import java.util.Set;
 import com.diarioclasse.api.enums.TipoAvaliacao;
 import com.diarioclasse.api.enums.TipoCapacidade;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -43,7 +44,8 @@ public class Criterio {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uc_id", nullable = false)
-    @JsonIgnore // Evitar loop
+    //@JsonIgnore // Evitar loop
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private UnidadeCurricular unidadeCurricular;
 
     @JsonIgnore // Evitar loop

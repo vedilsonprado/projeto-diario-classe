@@ -28,10 +28,11 @@ body { background-color: var(--color-background-gray); color: var(--color-text-d
 .header-left { display: flex; align-items: center; }
 
 .logo {
-    font-size: 24px; font-weight: bold; margin-right: 15px;
+    font-size: 24px; font-weight: bold; margin-right: 15px; padding: 5px 10px;
+    border: 2px solid var(--color-text-light); border-radius: 4px;
 }
 
-.header-logo { width: 150px; border-radius: 3px; }
+.header-logo { width: 100px; border-radius: 3px; }
 
 .system-title { font-size: 1.2em; font-weight: 500; }
 
@@ -85,7 +86,7 @@ body { background-color: var(--color-background-gray); color: var(--color-text-d
 /* Logo Inicial */
 .initial-logo-state { text-align: center; padding: 50px; display: none; }
 .initial-logo-state.active { display: block; }
-.site-logo { width: 400px; margin-bottom: 20px; border-radius: 10px; }
+.site-logo { width: 150px; height: 150px; margin-bottom: 20px; border-radius: 10px; }
 .initial-logo-state h1 { color: #999; font-size: 1.5em; font-weight: 300; }
 
 /* Lista Alunos */
@@ -147,36 +148,38 @@ body { background-color: var(--color-background-gray); color: var(--color-text-d
 .admin-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
+    gap: 25px; /* Aumentei o espaçamento um pouco */
 }
 
 /* --- CORREÇÃO AQUI: Estilo do Cartão (Card) --- */
 .admin-card {
-    background-color: #fff;       /* Fundo Branco */
-    border-radius: 10px;          /* Bordas Arredondadas */
-    padding: 30px 20px;           /* Espaçamento Interno */
-    text-align: center;           /* Centralizar Texto */
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05); /* Sombra Leve */
-    border: 1px solid #eee;       /* Borda sutil */
+    background-color: #fff;       
+    border-radius: 10px;          
+    padding: 30px 20px;           
+    text-align: center;           
+    
+    /* CORREÇÃO VISUAL: Borda mais escura e Sombra mais forte */
+    border: 1px solid #ccc;       
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08); 
+
     transition: transform 0.3s, box-shadow 0.3s;
     
-    /* Propriedades de Layout */
     cursor: default; 
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
-/* Efeito Hover no Card (apenas elevação visual) */
+/* Efeito Hover no Card */
 .admin-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.15);
     border-color: var(--color-senai-green);
 }
 
-/* --- Ícones dentro do card (Estavam faltando) --- */
+/* --- Ícones dentro do card --- */
 .icon-container {
-    background-color: rgba(0, 135, 203, 0.1); /* Azul Senai bem claro */
+    background-color: rgba(0, 135, 203, 0.1); 
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -201,19 +204,19 @@ body { background-color: var(--color-background-gray); color: var(--color-text-d
     font-size: 0.9em;
     color: #888;
     line-height: 1.4;
-    flex-grow: 1; /* Empurra os botões para baixo */
+    flex-grow: 1; 
 }
 
 /* --- Área dos Botões --- */
 .card-actions {
     margin-top: 20px;
     display: flex;
-    gap: 10px; /* Espaço entre os botões */
+    gap: 10px; 
 }
 
 /* Estilo Base dos Botões Admin */
 .btn-admin {
-    flex: 1; /* Faz os botões ocuparem larguras iguais */
+    flex: 1; 
     padding: 10px;
     border: none;
     border-radius: 5px;
@@ -248,7 +251,7 @@ body { background-color: var(--color-background-gray); color: var(--color-text-d
 }
 
 /* =========================================
-   ESTILOS DO FORMULÁRIO DE TURMA
+   ESTILOS DOS FORMULÁRIOS DE CADASTRO
    ========================================= */
 
 .form-section {
@@ -268,7 +271,7 @@ body { background-color: var(--color-background-gray); color: var(--color-text-d
 
 .section-desc { font-size: 0.9em; color: #666; margin-bottom: 15px; }
 
-/* Grid de Inputs (Lado a Lado) */
+/* Grid de Inputs */
 .form-row { display: flex; gap: 20px; }
 .input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
 
@@ -280,7 +283,7 @@ body { background-color: var(--color-background-gray); color: var(--color-text-d
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 10px;
-    max-height: 200px; /* Scroll se tiver muitas */
+    max-height: 200px;
     overflow-y: auto;
     border: 1px solid #eee;
     padding: 10px;
@@ -292,7 +295,7 @@ body { background-color: var(--color-background-gray); color: var(--color-text-d
 }
 .uc-checkbox-item:hover { background-color: #f9f9f9; }
 
-/* Linhas Dinâmicas de Aluno */
+/* Linhas Dinâmicas */
 .student-row {
     display: flex; gap: 10px; margin-bottom: 10px; align-items: center;
     animation: fadeIn 0.3s;
@@ -311,7 +314,7 @@ body { background-color: var(--color-background-gray); color: var(--color-text-d
     padding: 8px 15px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 0.9em;
 }
 
-/* Botão Salvar Principal */
+/* Botões de Ação do Formulário */
 .form-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 30px; padding-bottom: 50px; }
 
 .btn-save-all {
@@ -335,3 +338,118 @@ body { background-color: var(--color-background-gray); color: var(--color-text-d
     border-color: var(--color-senai-blue);
     outline: none;
 }
+
+/* Botões de Ação na Tabela */
+.btn-action {
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    margin: 0 2px;
+}
+
+.btn-edit { background-color: #ffc107; color: #333; }
+.btn-edit:hover { background-color: #e0a800; }
+
+.btn-delete { background-color: #dc3545; color: white;}
+.btn-delete:hover { background-color: #c82333; }
+
+/* =========================================
+   ESTILOS GERAIS DE MODAL (JANELAS)
+   ========================================= */
+
+/* Fundo escuro que cobre a tela inteira */
+.modal-overlay {
+    display: none; /* Escondido por padrão */
+    position: fixed; /* Fixa na tela */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Fundo preto transparente */
+    z-index: 2000; /* Acima de tudo */
+    justify-content: center;
+    align-items: center;
+}
+
+/* Classe ativa para mostrar */
+.modal-overlay.active {
+    display: flex;
+}
+
+/* Caixa do conteúdo */
+.modal-content {
+    background-color: white;
+    padding: 25px;
+    border-radius: 8px;
+    width: 500px;
+    max-width: 90%;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    animation: slideDown 0.3s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: var(--color-senai-blue);
+}
+
+.close-modal {
+    font-size: 28px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close-modal:hover { color: #000; }
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+    margin-top: 10px;
+}
+
+.btn-cancel {
+    background-color: #ccc;
+    color: #333;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-confirm {
+    background-color: var(--color-senai-green);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-confirm:hover { opacity: 0.9; }
+.btn-cancel:hover { background-color: #bbb; }
