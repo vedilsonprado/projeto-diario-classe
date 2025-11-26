@@ -163,5 +163,5 @@ function renderizarTabelaAlunos(alunos, container) {
 function irParaPerfil(alunoId) {
     // Redireciona para a página de perfil passando o ID na URL
     // Exemplo: perfil-aluno.html?id=1
-    window.location.href = `perfil-aluno.html?id=${alunoId}`;
+    window.location.href = `../pages/perfil-aluno.html?id=${alunoId}`;
 }
