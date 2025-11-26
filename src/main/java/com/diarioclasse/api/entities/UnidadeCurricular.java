@@ -27,65 +27,27 @@ public class UnidadeCurricular {
     @Column(name = "carga_horaria")
     private Integer cargaHoraria;
 
-    // Relacionamento 1:N com Criterio (Uma UC tem Muitos Critérios)
-    @JsonIgnore
+    // --- MUDANÇA: Lista de Capacidades ---
     @OneToMany(mappedBy = "unidadeCurricular", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Criterio> criterios;
+    private Set<Capacidade> capacidades;
 
-    // Relacionamento N:N com Turma (via TurmaUC)
     @JsonIgnore
     @OneToMany(mappedBy = "unidadeCurricular", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<TurmaUC> turmasUcs;
 
-    // Construtor padrão (necessário para JPA)
-    public UnidadeCurricular() {
-    }
+    public UnidadeCurricular() {}
 
-    // Construtor para facilitar a criação
-    public UnidadeCurricular(String nome, Integer cargaHoraria) {
-        this.nome = nome;
-        this.cargaHoraria = cargaHoraria;
-    }
-
-    // --- Getters e Setters ---
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public Integer getCargaHoraria() {
-        return cargaHoraria;
-    }
-
-    public void setCargaHoraria(Integer cargaHoraria) {
-        this.cargaHoraria = cargaHoraria;
-    }
-
-    public Set<Criterio> getCriterios() {
-        return criterios;
-    }
-
-    public void setCriterios(Set<Criterio> criterios) {
-        this.criterios = criterios;
-    }
-
-    public Set<TurmaUC> getTurmasUcs() {
-        return turmasUcs;
-    }
-
-    public void setTurmasUcs(Set<TurmaUC> turmasUcs) {
-        this.turmasUcs = turmasUcs;
-    }
+    // Getters e Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
+    public Integer getCargaHoraria() { return cargaHoraria; }
+    public void setCargaHoraria(Integer cargaHoraria) { this.cargaHoraria = cargaHoraria; }
+    
+    public Set<Capacidade> getCapacidade() { return capacidades; }
+    public void setCapacidade(Set<Capacidade> capacidades) { this.capacidades = capacidades; }
+    
+    public Set<TurmaUC> getTurmasUcs() { return turmasUcs; }
+    public void setTurmasUcs(Set<TurmaUC> turmasUcs) { this.turmasUcs = turmasUcs; }
 }

@@ -57,7 +57,7 @@ function selecionarTurma(elementoLi, turma) {
 }
 
 // ==========================================
-// 2. LÓGICA DE ALUNOS (APENAS LISTAGEM)
+// 2. LÓGICA DE ALUNOS (LISTAGEM DINÂMICA)
 // ==========================================
 
 async function carregarAlunos(turmaId) {
@@ -95,15 +95,17 @@ function renderizarTabelaAlunos(alunos, container) {
         return;
     }
 
+    // --- CABEÇALHO DA TABELA ---
+    // Alteração: Removida a coluna ID e ajustada a largura das outras
     let htmlHeadRow1 = `
         <tr>
-            <th rowspan="2" style="width: 5%">ID</th>
-            <th rowspan="2" style="width: 25%">Nome Completo</th>
-            <th rowspan="2" style="width: 20%">Email</th>
+            <th rowspan="2" style="width: 30%">Nome Completo</th>
+            <th rowspan="2" style="width: 25%">Email</th>
     `;
 
     let htmlHeadRow2 = `<tr>`;
 
+    // Gera as colunas dinâmicas de UC
     ucsExemplo.forEach(uc => {
         htmlHeadRow1 += `<th colspan="2" style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.3);">${uc.nomeUC}</th>`;
         htmlHeadRow2 += `
@@ -112,23 +114,26 @@ function renderizarTabelaAlunos(alunos, container) {
         `;
     });
 
+    // Coluna de Ações
     htmlHeadRow1 += `<th rowspan="2" style="width: 10%">Ações</th></tr>`;
     htmlHeadRow2 += `</tr>`;
 
+    // --- CORPO DA TABELA ---
     const htmlBody = alunos.map(aluno => {
+        // Gera as células de contagem de notas
         const colunasNotas = aluno.desempenhos.map(desempenho => `
             <td style="text-align: center; background-color: #f9f9f9;"><strong>${desempenho.cc}</strong></td>
             <td style="text-align: center;">${desempenho.cd}</td>
         `).join('');
 
+        // Alteração: Removido ${aluno.id} da primeira coluna
         return `
             <tr>
-                <td>${aluno.id}</td>
                 <td>${aluno.nomeCompleto}</td>
                 <td>${aluno.email || '-'}</td>
                 ${colunasNotas}
                 <td style="text-align: center;">
-                    <button class="btn-lancar-notas" onclick="abrirDiario(${aluno.id})">
+                    <button class="btn-lancar-notas" onclick="irParaPerfil(${aluno.id})">
                         <i class="fas fa-edit"></i> Notas
                     </button>
                 </td>
@@ -151,6 +156,12 @@ function renderizarTabelaAlunos(alunos, container) {
     container.innerHTML = tabelaHTML;
 }
 
-function abrirDiario(alunoId) {
-    alert(`Funcionalidade futura: Abrir diário para o aluno ID ${alunoId}`);
+// ==========================================
+// 3. REDIRECIONAMENTO
+// ==========================================
+
+function irParaPerfil(alunoId) {
+    // Redireciona para a página de perfil passando o ID na URL
+    // Exemplo: perfil-aluno.html?id=1
+    window.location.href = `perfil-aluno.html?id=${alunoId}`;
 }

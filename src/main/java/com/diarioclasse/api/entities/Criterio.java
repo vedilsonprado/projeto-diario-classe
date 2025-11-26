@@ -3,7 +3,6 @@ package com.diarioclasse.api.entities;
 import java.util.Set;
 
 import com.diarioclasse.api.enums.TipoAvaliacao;
-import com.diarioclasse.api.enums.TipoCapacidade;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -25,36 +24,31 @@ import jakarta.persistence.Table;
 @Table(name = "tb_criterio")
 public class Criterio {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(name = "descricao", nullable = false)
-    private String descricao;
+	@Column(name = "descricao", nullable = false)
+	private String descricao; // Ex: "Cria tabelas corretamente"
 
-    // --- CAMPOS PESO E NOTA MAXIMA REMOVIDOS ---
+	@Enumerated(EnumType.STRING)
+	@Column(name = "tipo_avaliacao", nullable = false)
+	private TipoAvaliacao tipoAvaliacao; // CRÍTICO ou DESEJÁVEL
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_avaliacao", nullable = false)
-    private TipoAvaliacao tipoAvaliacao; // CRITICO ou DESEJAVEL
+	// --- MUDANÇA: Agora aponta para Capacidade, não mais UC ---
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "capacidade_id", nullable = false)
+	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+	private Capacidade capacidade;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "tipo_capacidade", nullable = false)
-    private TipoCapacidade tipoCapacidade; // TECNICA ou SOCIOEMOCIONAL
+	@JsonIgnore
+	@OneToMany(mappedBy = "criterio", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<LancamentoNota> lancamentosNotas;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "uc_id", nullable = false)
-    //@JsonIgnore // Evitar loop
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private UnidadeCurricular unidadeCurricular;
+	public Criterio() {
+	}
 
-    @JsonIgnore // Evitar loop
-    @OneToMany(mappedBy = "criterio", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<LancamentoNota> lancamentosNotas;
-
-    // --- Construtores, Getters e Setters (Gere novamente no IDE para remover os antigos) ---
-    public Criterio() {}
-
+	// Getters e Setters Atualizados
 	public Long getId() {
 		return id;
 	}
@@ -79,20 +73,12 @@ public class Criterio {
 		this.tipoAvaliacao = tipoAvaliacao;
 	}
 
-	public TipoCapacidade getTipoCapacidade() {
-		return tipoCapacidade;
+	public Capacidade getCapacidade() {
+		return capacidade;
 	}
 
-	public void setTipoCapacidade(TipoCapacidade tipoCapacidade) {
-		this.tipoCapacidade = tipoCapacidade;
-	}
-
-	public UnidadeCurricular getUnidadeCurricular() {
-		return unidadeCurricular;
-	}
-
-	public void setUnidadeCurricular(UnidadeCurricular unidadeCurricular) {
-		this.unidadeCurricular = unidadeCurricular;
+	public void setCapacidade(Capacidade capacidade) {
+		this.capacidade = capacidade;
 	}
 
 	public Set<LancamentoNota> getLancamentosNotas() {
@@ -102,7 +88,4 @@ public class Criterio {
 	public void setLancamentosNotas(Set<LancamentoNota> lancamentosNotas) {
 		this.lancamentosNotas = lancamentosNotas;
 	}
-    
-    
-    
 }

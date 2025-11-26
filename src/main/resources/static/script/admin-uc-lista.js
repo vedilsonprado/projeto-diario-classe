@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// 1. LISTAGEM
+// 1. LISTAGEM DE UCs
 // ==========================================
 async function carregarUCs() {
     const tbody = document.getElementById('tabela-uc-body');
@@ -44,113 +44,154 @@ async function carregarUCs() {
     }
 }
 
-// ==========================================
-// 2. EXCLUSÃO DA UC (Mãe)
-// ==========================================
 async function excluirUC(id) {
-    if(!confirm("ATENÇÃO: Ao excluir esta Unidade Curricular, TODOS os critérios associados a ela também serão excluídos permanentemente.\n\nDeseja continuar?")) return;
+    if(!confirm("ATENÇÃO: Excluir esta UC apagará todas as Capacidades e Critérios associados.\nDeseja continuar?")) return;
     
     try {
-        const res = await fetch(`${API_URL}/unidadescurriculares/${id}`, { method: 'DELETE' });
-        if(res.ok) {
-            carregarUCs();
-        } else {
-            alert("Erro ao excluir. Verifique se existem turmas cursando esta matéria.");
-        }
+        await fetch(`${API_URL}/unidadescurriculares/${id}`, { method: 'DELETE' });
+        carregarUCs();
     } catch (e) {
-        alert("Erro de conexão.");
+        alert("Erro ao excluir.");
     }
 }
 
 // ==========================================
-// 3. EDIÇÃO (MODAL)
+// 2. MODAL DE EDIÇÃO (CARREGAMENTO)
 // ==========================================
 async function abrirModalEdicao(ucId) {
     document.getElementById('modal-editar-uc').classList.add('active');
     document.getElementById('editIdUC').value = ucId;
 
-    // A. Carregar dados da UC
+    // A. Dados Básicos da UC
     const resUC = await fetch(`${API_URL}/unidadescurriculares/${ucId}`);
     const uc = await resUC.json();
     document.getElementById('editNomeUC').value = uc.nome;
     document.getElementById('editCargaUC').value = uc.cargaHoraria;
 
-    // B. Carregar Critérios da UC
-    // Usamos o endpoint específico que criamos antes: /api/criterios/unidade/{id}
-    carregarCriteriosNoModal(ucId);
+    // B. Carregar Árvore de Capacidades e Critérios
+    carregarCapacidadesNoModal(ucId);
 }
 
-async function carregarCriteriosNoModal(ucId) {
-    const container = document.getElementById('lista-criterios-edicao');
-    container.innerHTML = 'Carregando critérios...';
+async function carregarCapacidadesNoModal(ucId) {
+    const container = document.getElementById('container-capacidades-edicao');
+    container.innerHTML = 'Carregando estrutura...';
 
-    const res = await fetch(`${API_URL}/criterios/unidade/${ucId}`);
-    const criterios = await res.json();
+    // Busca as capacidades vinculadas a esta UC
+    const res = await fetch(`${API_URL}/capacidades/unidade/${ucId}`);
+    const capacidades = await res.json();
 
     container.innerHTML = '';
     
-    criterios.forEach(criterio => {
-        adicionarLinhaCriterioVisual(criterio);
+    // Renderiza cada bloco de capacidade
+    capacidades.forEach(cap => {
+        adicionarBlocoCapacidadeVisual(cap);
     });
 }
 
 /**
- * Cria uma linha no modal. 
- * Se receber um objeto 'criterio', preenche os dados (Edição).
- * Se não receber nada, cria vazia (Novo).
+ * Cria um bloco de capacidade no modal.
+ * Se receber objeto 'cap', preenche (Edição). Se null, cria vazio (Novo).
  */
-function adicionarLinhaCriterioVisual(criterio = null) {
-    const container = document.getElementById('lista-criterios-edicao');
+function adicionarBlocoCapacidadeVisual(cap = null) {
+    const container = document.getElementById('container-capacidades-edicao');
     const div = document.createElement('div');
-    div.className = 'student-row'; // Reaproveitando estilo CSS
+    div.className = 'capacity-block';
     
-    // Valores iniciais
-    const id = criterio ? criterio.id : ''; // ID vazio se for novo
-    const desc = criterio ? criterio.descricao : '';
-    const tipoAval = criterio ? criterio.tipoAvaliacao : 'CRITICO';
-    const tipoCap = criterio ? criterio.tipoCapacidade : 'TECNICA';
+    const id = cap ? cap.id : '';
+    const desc = cap ? cap.descricao : '';
+    const tipo = cap ? cap.tipoCapacidade : 'TECNICA';
+    // Gera um ID único para o container de critérios deste bloco
+    const listaCriteriosId = `lista-crit-${id || Date.now()}`; 
+
+    div.innerHTML = `
+        <input type="hidden" class="cap-id" value="${id}">
+        
+        <button class="btn-remove-cap" onclick="removerCapacidade(this, '${id}')" title="Excluir Capacidade">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="capacity-header">
+            <div class="input-group" style="flex: 3; margin-bottom: 0;">
+                <label style="font-size: 0.8em;">Capacidade</label>
+                <input type="text" class="cap-desc" value="${desc}" placeholder="Descrição">
+            </div>
+            <div class="input-group" style="flex: 1; margin-bottom: 0;">
+                <label style="font-size: 0.8em;">Tipo</label>
+                <select class="cap-tipo form-select">
+                    <option value="TECNICA" ${tipo === 'TECNICA' ? 'selected' : ''}>Técnica</option>
+                    <option value="SOCIOEMOCIONAL" ${tipo === 'SOCIOEMOCIONAL' ? 'selected' : ''}>Socioemocional</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="criteria-list" id="${listaCriteriosId}">
+            </div>
+
+        <button class="btn-add-row" style="margin-top:10px; font-size: 0.8em; background-color: #6c757d;" onclick="adicionarLinhaCriterioVisual('${listaCriteriosId}')">
+            <i class="fas fa-plus"></i> Critério
+        </button>
+    `;
+    
+    container.appendChild(div);
+
+    // Se for edição e tiver critérios, carrega eles
+    if (cap && cap.criterios) {
+        cap.criterios.forEach(crit => {
+            adicionarLinhaCriterioVisual(listaCriteriosId, crit);
+        });
+    }
+}
+
+function adicionarLinhaCriterioVisual(containerId, crit = null) {
+    const lista = document.getElementById(containerId);
+    const div = document.createElement('div');
+    div.className = 'student-row';
+    div.style.marginTop = '5px';
+
+    const id = crit ? crit.id : '';
+    const desc = crit ? crit.descricao : '';
+    const tipo = crit ? crit.tipoAvaliacao : 'CRITICO';
 
     div.innerHTML = `
         <input type="hidden" class="crit-id" value="${id}">
         
-        <input type="text" class="crit-desc" value="${desc}" placeholder="Descrição" style="flex: 3;">
+        <input type="text" class="crit-desc" value="${desc}" placeholder="Descrição Critério" style="flex: 3;">
         
         <select class="crit-tipo form-select" style="flex: 1;">
-            <option value="CRITICO" ${tipoAval === 'CRITICO' ? 'selected' : ''}>Crítico</option>
-            <option value="DESEJAVEL" ${tipoAval === 'DESEJAVEL' ? 'selected' : ''}>Desejável</option>
+            <option value="CRITICO" ${tipo === 'CRITICO' ? 'selected' : ''}>Crítico</option>
+            <option value="DESEJAVEL" ${tipo === 'DESEJAVEL' ? 'selected' : ''}>Desejável</option>
         </select>
 
-        <select class="crit-cap form-select" style="flex: 1;">
-            <option value="TECNICA" ${tipoCap === 'TECNICA' ? 'selected' : ''}>Técnica</option>
-            <option value="SOCIOEMOCIONAL" ${tipoCap === 'SOCIOEMOCIONAL' ? 'selected' : ''}>Socioemocional</option>
-        </select>
-
-        <button class="btn-remove-row" onclick="removerCriterio(this, '${id}')" title="Excluir Critério">
+        <button class="btn-remove-row" onclick="removerCriterio(this, '${id}')" title="Remover">
             <i class="fas fa-trash"></i>
         </button>
     `;
-    container.appendChild(div);
+    lista.appendChild(div);
 }
 
-// Ação: Remover Critério (Botão Lixeira da linha)
-async function removerCriterio(btn, idCriterio) {
-    // Se tem ID, está no banco. Precisamos deletar via API.
-    if (idCriterio) {
-        if(!confirm("Excluir este critério permanentemente do banco de dados?")) return;
-        
+// ==========================================
+// 3. REMOÇÃO IMEDIATA (DELETE)
+// ==========================================
+async function removerCapacidade(btn, id) {
+    if (id) {
+        if(!confirm("Excluir esta capacidade removerá todos os seus critérios. Continuar?")) return;
         try {
-            const res = await fetch(`${API_URL}/criterios/${idCriterio}`, { method: 'DELETE' });
-            if (res.ok) {
-                btn.parentElement.remove(); // Remove do visual
-            } else {
-                alert("Erro ao excluir critério. Verifique se há notas lançadas para ele.");
-            }
-        } catch(e) {
-            console.error(e);
-            alert("Erro de conexão.");
-        }
+            await fetch(`${API_URL}/capacidades/${id}`, { method: 'DELETE' });
+            btn.parentElement.remove();
+        } catch(e) { alert("Erro ao excluir capacidade."); }
     } else {
-        // Se não tem ID, é apenas uma linha visual não salva. Remove direto.
+        btn.parentElement.remove();
+    }
+}
+
+async function removerCriterio(btn, id) {
+    if (id) {
+        if(!confirm("Excluir critério permanentemente?")) return;
+        try {
+            await fetch(`${API_URL}/criterios/${id}`, { method: 'DELETE' });
+            btn.parentElement.remove();
+        } catch(e) { alert("Erro ao excluir critério."); }
+    } else {
         btn.parentElement.remove();
     }
 }
@@ -160,7 +201,7 @@ function fecharModalEdicao() {
 }
 
 // ==========================================
-// 4. SALVAR ALTERAÇÕES
+// 4. SALVAR EM CASCATA (UPDATE/CREATE)
 // ==========================================
 async function salvarEdicaoUC() {
     const ucId = document.getElementById('editIdUC').value;
@@ -172,49 +213,85 @@ async function salvarEdicaoUC() {
     btnSalvar.disabled = true;
 
     try {
-        // 1. Atualizar dados básicos da UC (PUT)
+        // 1. Atualizar UC
         await fetch(`${API_URL}/unidadescurriculares/${ucId}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ nome: nome, cargaHoraria: carga })
         });
 
-        // 2. Processar Critérios (Criar Novos ou Atualizar Existentes)
-        const linhas = document.querySelectorAll('#lista-criterios-edicao .student-row');
+        // 2. Iterar sobre Blocos de Capacidade
+        const blocos = document.querySelectorAll('.capacity-block');
         
-        const promises = Array.from(linhas).map(linha => {
-            const id = linha.querySelector('.crit-id').value;
-            const descricao = linha.querySelector('.crit-desc').value;
-            const tipoAval = linha.querySelector('.crit-tipo').value;
-            const tipoCap = linha.querySelector('.crit-cap').value;
+        for (const bloco of blocos) {
+            const capId = bloco.querySelector('.cap-id').value;
+            const capDesc = bloco.querySelector('.cap-desc').value;
+            const capTipo = bloco.querySelector('.cap-tipo').value;
 
-            if (!descricao) return null; // Pula vazios
+            if (!capDesc) continue;
 
-            const payload = {
-                descricao: descricao,
-                tipoAvaliacao: tipoAval,
-                tipoCapacidade: tipoCap,
+            let idCapacidadeSalva = capId;
+
+            // Payload da Capacidade
+            const capPayload = {
+                descricao: capDesc,
+                tipoCapacidade: capTipo,
                 unidadeCurricular: { id: ucId }
             };
 
-            if (id) {
-                // Tem ID: Atualizar (PUT)
-                return fetch(`${API_URL}/criterios/${id}`, {
+            // Salvar Capacidade (PUT ou POST)
+            let resCap;
+            if (capId) {
+                resCap = await fetch(`${API_URL}/capacidades/${capId}`, {
                     method: 'PUT',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(capPayload)
                 });
             } else {
-                // Não tem ID: Criar (POST)
-                return fetch(`${API_URL}/criterios`, {
+                resCap = await fetch(`${API_URL}/capacidades`, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(capPayload)
                 });
             }
-        });
 
-        await Promise.all(promises);
+            if (resCap.ok) {
+                const capSalva = await resCap.json();
+                idCapacidadeSalva = capSalva.id;
+
+                // 3. Salvar Critérios desta Capacidade
+                const linhasCrit = bloco.querySelectorAll('.student-row');
+                const promisesCrit = Array.from(linhasCrit).map(linha => {
+                    const critId = linha.querySelector('.crit-id').value;
+                    const critDesc = linha.querySelector('.crit-desc').value;
+                    const critTipo = linha.querySelector('.crit-tipo').value;
+
+                    if (!critDesc) return null;
+
+                    const critPayload = {
+                        descricao: critDesc,
+                        tipoAvaliacao: critTipo,
+                        capacidade: { id: idCapacidadeSalva }
+                    };
+
+                    if (critId) {
+                        return fetch(`${API_URL}/criterios/${critId}`, {
+                            method: 'PUT',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(critPayload)
+                        });
+                    } else {
+                        return fetch(`${API_URL}/criterios`, {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify(critPayload)
+                        });
+                    }
+                });
+
+                await Promise.all(promisesCrit);
+            }
+        }
 
         alert("Alterações salvas com sucesso!");
         fecharModalEdicao();
@@ -222,7 +299,7 @@ async function salvarEdicaoUC() {
 
     } catch (e) {
         console.error(e);
-        alert("Erro ao salvar alterações.");
+        alert("Erro ao salvar.");
     } finally {
         btnSalvar.textContent = "Salvar Alterações";
         btnSalvar.disabled = false;

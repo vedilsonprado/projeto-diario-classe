@@ -27,46 +27,38 @@ public class CriterioController {
     @Autowired
     private CriterioService criterioService;
 
-    // POST: Cadastrar novo Critério
     @PostMapping
-    public ResponseEntity<Criterio> cadastrarCriterio(@RequestBody Criterio criterio) {
-        Criterio novoCriterio = criterioService.cadastrar(criterio);
-        return new ResponseEntity<>(novoCriterio, HttpStatus.CREATED);
+    public ResponseEntity<Criterio> cadastrar(@RequestBody Criterio criterio) {
+        Criterio novo = criterioService.cadastrar(criterio);
+        return new ResponseEntity<>(novo, HttpStatus.CREATED);
     }
 
-    // GET: Listar todos os Critérios
-    @GetMapping
-    public ResponseEntity<List<Criterio>> listarTodos() {
-        List<Criterio> criterios = criterioService.listarTodos();
-        return ResponseEntity.ok(criterios);
-    }
-
-    // GET: Listar Critérios por ID da Unidade Curricular
-    // Ex: /api/criterios/unidade/5
+    // Endpoint necessário para o Modal de Edição de UC (Lista tudo de uma vez)
     @GetMapping("/unidade/{ucId}")
     public ResponseEntity<List<Criterio>> listarPorUnidadeCurricular(@PathVariable Long ucId) {
+        // Agora este método existe no Service!
         List<Criterio> criterios = criterioService.listarPorUnidadeCurricular(ucId);
         return ResponseEntity.ok(criterios);
     }
-
-    // GET: Buscar Critério por ID
-    @GetMapping("/{id}")
-    public ResponseEntity<Criterio> buscarPorId(@PathVariable Long id) {
-        Criterio criterio = criterioService.buscarPorId(id);
-        return ResponseEntity.ok(criterio);
+    
+    // Endpoint novo (Opcional, se quiser listar por capacidade especifica)
+    @GetMapping("/capacidade/{capId}")
+    public ResponseEntity<List<Criterio>> listarPorCapacidade(@PathVariable Long capId) {
+        List<Criterio> criterios = criterioService.listarPorCapacidade(capId);
+        return ResponseEntity.ok(criterios);
     }
 
-    // PUT: Atualizar Critério
-    @PutMapping("/{id}")
-    public ResponseEntity<Criterio> atualizarCriterio(@PathVariable Long id, @RequestBody Criterio criterio) {
-        Criterio criterioAtualizado = criterioService.atualizar(id, criterio);
-        return ResponseEntity.ok(criterioAtualizado);
-    }
-
-    // DELETE: Deletar Critério
+    // ... (Demais métodos: listarTodos, buscarPorId, atualizar, deletar) ...
+    // Mantenha o código padrão para esses
+    
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deletarCriterio(@PathVariable Long id) {
+    public void deletar(@PathVariable Long id) {
         criterioService.deletar(id);
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<Criterio> atualizar(@PathVariable Long id, @RequestBody Criterio criterio) {
+        return ResponseEntity.ok(criterioService.atualizar(id, criterio));
     }
 }

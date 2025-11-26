@@ -7,8 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.diarioclasse.api.entities.Capacidade;
 import com.diarioclasse.api.entities.Criterio;
-import com.diarioclasse.api.entities.UnidadeCurricular;
 import com.diarioclasse.api.repositories.CriterioRepository;
 
 @Service
@@ -18,20 +18,29 @@ public class CriterioService {
     private CriterioRepository criterioRepository;
 
     @Autowired
-    private UnidadeCurricularService ucService;
+    private CapacidadeService capacidadeService;
+    
+    @Autowired
+    private UnidadeCurricularService ucService; // Necessário para validar UC
 
     public Criterio cadastrar(Criterio criterio) {
-        Long ucId = criterio.getUnidadeCurricular().getId();
-        UnidadeCurricular ucExistente = ucService.buscarPorId(ucId);
-        
-        criterio.setUnidadeCurricular(ucExistente); 
-        
+        Long capacidadeId = criterio.getCapacidade().getId();
+        Capacidade capacidadeExistente = capacidadeService.buscarPorId(capacidadeId);
+        criterio.setCapacidade(capacidadeExistente); 
         return criterioRepository.save(criterio);
     }
 
+    // --- MÉTODO RESTAURADO (CORRIGE O ERRO DO CONTROLLER) ---
     public List<Criterio> listarPorUnidadeCurricular(Long ucId) {
-        ucService.buscarPorId(ucId); 
-        return criterioRepository.findByUnidadeCurricularId(ucId);
+        // Valida se a UC existe
+        ucService.buscarPorId(ucId);
+        // Usa a busca aninhada do repositório
+        return criterioRepository.findByCapacidadeUnidadeCurricularId(ucId);
+    }
+
+    public List<Criterio> listarPorCapacidade(Long capacidadeId) {
+        capacidadeService.buscarPorId(capacidadeId);
+        return criterioRepository.findByCapacidadeId(capacidadeId);
     }
     
     public List<Criterio> listarTodos() {
@@ -42,22 +51,19 @@ public class CriterioService {
         return criterioRepository.findById(id)
             .orElseThrow(() -> new ResponseStatusException(
                 HttpStatus.NOT_FOUND, 
-                "Critério de avaliação não encontrado para o ID: " + id
+                "Critério não encontrado: " + id
             ));
     }
 
     public Criterio atualizar(Long id, Criterio criterioDetalhes) {
         Criterio criterioExistente = buscarPorId(id);
         
-        // Atualiza campos (REMOVIDOS PESO E NOTA MÁXIMA)
         criterioExistente.setDescricao(criterioDetalhes.getDescricao());
         criterioExistente.setTipoAvaliacao(criterioDetalhes.getTipoAvaliacao());
-        criterioExistente.setTipoCapacidade(criterioDetalhes.getTipoCapacidade());
-
-        // Atualiza UC se necessário
-        if (criterioDetalhes.getUnidadeCurricular() != null && criterioDetalhes.getUnidadeCurricular().getId() != null) {
-            UnidadeCurricular novaUc = ucService.buscarPorId(criterioDetalhes.getUnidadeCurricular().getId());
-            criterioExistente.setUnidadeCurricular(novaUc);
+        
+        if (criterioDetalhes.getCapacidade() != null && criterioDetalhes.getCapacidade().getId() != null) {
+            Capacidade novaCapacidade = capacidadeService.buscarPorId(criterioDetalhes.getCapacidade().getId());
+            criterioExistente.setCapacidade(novaCapacidade);
         }
         
         return criterioRepository.save(criterioExistente);

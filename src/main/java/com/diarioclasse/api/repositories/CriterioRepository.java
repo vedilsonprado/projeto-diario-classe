@@ -9,10 +9,15 @@ import com.diarioclasse.api.entities.Criterio;
 
 @Repository
 public interface CriterioRepository extends JpaRepository<Criterio, Long> {
-    
-    // Método crucial: buscar todos os critérios que pertencem a uma UC específica
-    List<Criterio> findByUnidadeCurricularId(Long ucId);
 
-    // Método para buscar critérios por tipo de avaliação (Crítico/Desejável)
-    List<Criterio> findByUnidadeCurricularIdAndTipoAvaliacao(Long ucId, String tipoAvaliacao);
+	// --- NOVO MÉTODO ---
+	// O Spring vai buscar: Criterio -> campo "capacidade" -> campo "id"
+	List<Criterio> findByCapacidadeId(Long capacidadeId);
+
+	// --- OPCIONAL (Dica) ---
+	// Se você precisar listar todos os critérios de uma UC inteira (ignorando a
+	// capacidade específica),
+	// você pode usar este nome de método (navegando pelo relacionamento):
+	// Criterio -> Capacidade -> UnidadeCurricular -> Id
+	List<Criterio> findByCapacidadeUnidadeCurricularId(Long ucId);
 }

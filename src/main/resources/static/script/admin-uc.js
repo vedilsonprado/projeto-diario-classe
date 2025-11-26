@@ -1,98 +1,164 @@
 const API_URL = 'http://localhost:8080/api';
 
 document.addEventListener('DOMContentLoaded', () => {
-	adicionarLinhaCriterio(); // Inicia com uma linha
-	adicionarLinhaCriterio(); // Visualmente melhor com duas
+    adicionarBlocoCapacidade(); // Inicia com um bloco padrão
 });
 
-// 1. GERENCIAR LINHAS DE CRITÉRIOS
-function adicionarLinhaCriterio() {
-	const lista = document.getElementById('lista-criterios');
-	const div = document.createElement('div');
-	div.className = 'student-row'; // Reaproveitando a classe CSS de "linha"
+// ==========================================
+// 1. GERENCIAR BLOCOS DE CAPACIDADE (Nível 2)
+// ==========================================
+function adicionarBlocoCapacidade() {
+    const container = document.getElementById('container-capacidades');
+    const div = document.createElement('div');
+    div.className = 'capacity-block';
+    
+    // Gera ID único temporário para controlar os filhos
+    const blockId = Date.now();
 
-	// HTML da linha com os Selects necessários para o Backend
-	div.innerHTML = `
-        <input type="text" class="crit-desc" placeholder="Descrição (Ex: Modelagem ER)" style="flex: 2;">
+    div.innerHTML = `
+        <button class="btn-remove-cap" onclick="this.parentElement.remove()" title="Remover Capacidade">
+            <i class="fas fa-times"></i>
+        </button>
+        
+        <div class="capacity-header">
+            <div class="input-group" style="flex: 3; margin-bottom: 0;">
+                <label style="font-size: 0.8em;">Descrição da Capacidade</label>
+                <input type="text" class="cap-desc" placeholder="Ex: Modelagem de Dados">
+            </div>
+            <div class="input-group" style="flex: 1; margin-bottom: 0;">
+                <label style="font-size: 0.8em;">Tipo</label>
+                <select class="cap-tipo form-select">
+                    <option value="TECNICA">Técnica</option>
+                    <option value="SOCIOEMOCIONAL">Socioemocional</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="criteria-list" id="lista-criterios-${blockId}">
+            </div>
+
+        <button class="btn-add-row" style="margin-top:10px; font-size: 0.8em; background-color: #6c757d;" onclick="adicionarLinhaCriterio('${blockId}')">
+            <i class="fas fa-plus"></i> Adicionar Critério
+        </button>
+    `;
+    
+    container.appendChild(div);
+    
+    // Adiciona um critério padrão dentro desta capacidade nova
+    adicionarLinhaCriterio(blockId);
+}
+
+// ==========================================
+// 2. GERENCIAR LINHAS DE CRITÉRIO (Nível 3)
+// ==========================================
+function adicionarLinhaCriterio(blockId) {
+    const lista = document.getElementById(`lista-criterios-${blockId}`);
+    const div = document.createElement('div');
+    div.className = 'student-row'; // Reaproveita estilo
+    div.style.marginTop = '10px';
+    
+    div.innerHTML = `
+        <i class="fas fa-level-up-alt fa-rotate-90" style="color: #ccc; margin-right: 10px;"></i>
+        <input type="text" class="crit-desc" placeholder="Critério (Ex: Cria tabelas corretamente)" style="flex: 3;">
         
         <select class="crit-tipo form-select" style="flex: 1;">
             <option value="CRITICO">Crítico</option>
             <option value="DESEJAVEL">Desejável</option>
         </select>
 
-        <select class="crit-cap form-select" style="flex: 1;">
-            <option value="TECNICA">Técnica</option>
-            <option value="SOCIOEMOCIONAL">Socioemocional</option>
-        </select>
-
-        <button class="btn-remove-row" onclick="this.parentElement.remove()" title="Remover">
+        <button class="btn-remove-row" onclick="this.parentElement.remove()" title="Remover Critério">
             <i class="fas fa-trash"></i>
         </button>
     `;
-	lista.appendChild(div);
+    lista.appendChild(div);
 }
 
-// 2. SALVAR TUDO (CASCATA)
+// ==========================================
+// 3. SALVAR TUDO EM CASCATA
+// ==========================================
 async function salvarTudo() {
-	const nome = document.getElementById('nomeUC').value;
-	const carga = document.getElementById('cargaHoraria').value;
+    const nomeUC = document.getElementById('nomeUC').value;
+    const carga = document.getElementById('cargaHoraria').value;
 
-	// Validação Básica
-	if (!nome) {
-		alert("Preencha o Nome da Unidade Curricular.");
-		return;
-	}
+    if (!nomeUC) {
+        alert("Preencha o Nome da Unidade Curricular.");
+        return;
+    }
 
-	const btnSalvar = document.querySelector('.btn-save-all');
-	btnSalvar.disabled = true;
-	btnSalvar.textContent = "Salvando...";
+    const btnSalvar = document.querySelector('.btn-save-all');
+    btnSalvar.disabled = true;
+    btnSalvar.textContent = "Processando...";
 
-	try {
-		// PASSO 1: Criar a Unidade Curricular
-		const respUC = await fetch(`${API_URL}/unidadescurriculares`, {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				nome: nome,
-				cargaHoraria: carga ? parseInt(carga) : null
-			})
-		});
+    try {
+        // PASSO 1: Criar a UC
+        const respUC = await fetch(`${API_URL}/unidadescurriculares`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ 
+                nome: nomeUC, 
+                cargaHoraria: carga ? parseInt(carga) : null 
+            })
+        });
 
-		if (!respUC.ok) throw new Error("Erro ao criar Unidade Curricular.");
-		const ucCriada = await respUC.json();
-		const ucId = ucCriada.id;
+        if (!respUC.ok) throw new Error("Erro ao criar UC.");
+        const ucCriada = await respUC.json();
+        const ucId = ucCriada.id;
 
-		// PASSO 2: Criar os Critérios Vinculados
-		const linhas = document.querySelectorAll('#lista-criterios .student-row');
-		const promisesCriterios = Array.from(linhas).map(linha => {
-			const descricao = linha.querySelector('.crit-desc').value.trim();
-			const tipoAvaliacao = linha.querySelector('.crit-tipo').value;
-			const tipoCapacidade = linha.querySelector('.crit-cap').value;
+        // PASSO 2: Iterar sobre os Blocos de Capacidade
+        const blocosCapacidade = document.querySelectorAll('.capacity-block');
+        
+        // Usamos um loop for...of para poder usar await dentro (sequencial é mais seguro aqui)
+        for (const bloco of blocosCapacidade) {
+            const capDesc = bloco.querySelector('.cap-desc').value;
+            const capTipo = bloco.querySelector('.cap-tipo').value;
 
-			if (descricao) {
-				return fetch(`${API_URL}/criterios`, {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						descricao: descricao,
-						tipoAvaliacao: tipoAvaliacao,
-						tipoCapacidade: tipoCapacidade,
-						unidadeCurricular: { id: ucId } // Vínculo aqui
-					})
-				});
-			}
-		});
+            if (capDesc) {
+                // Salvar Capacidade vinculada à UC
+                const respCap = await fetch(`${API_URL}/capacidades`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        descricao: capDesc,
+                        tipoCapacidade: capTipo,
+                        unidadeCurricular: { id: ucId }
+                    })
+                });
 
-		// Aguarda todos os critérios serem salvos
-		await Promise.all(promisesCriterios);
+                if(respCap.ok) {
+                    const capCriada = await respCap.json();
+                    const capId = capCriada.id;
 
-		alert("Unidade Curricular e Critérios salvos com sucesso!");
-		window.location.href = 'admin.html';
+                    // PASSO 3: Salvar Critérios desta Capacidade
+                    const linhasCriterio = bloco.querySelectorAll('.student-row');
+                    const promisesCriterios = Array.from(linhasCriterio).map(linha => {
+                        const critDesc = linha.querySelector('.crit-desc').value;
+                        const critTipo = linha.querySelector('.crit-tipo').value;
 
-	} catch (error) {
-		console.error(error);
-		alert("Ocorreu um erro: " + error.message);
-		btnSalvar.disabled = false;
-		btnSalvar.textContent = "Salvar Unidade Curricular";
-	}
+                        if(critDesc) {
+                            return fetch(`${API_URL}/criterios`, {
+                                method: 'POST',
+                                headers: {'Content-Type': 'application/json'},
+                                body: JSON.stringify({
+                                    descricao: critDesc,
+                                    tipoAvaliacao: critTipo,
+                                    capacidade: { id: capId } // Vincula à Capacidade recém criada
+                                })
+                            });
+                        }
+                    });
+                    
+                    await Promise.all(promisesCriterios);
+                }
+            }
+        }
+
+        alert("Unidade Curricular cadastrada com sucesso!");
+        window.location.href = 'admin.html';
+
+    } catch (error) {
+        console.error(error);
+        alert("Erro ao salvar: " + error.message);
+        btnSalvar.disabled = false;
+        btnSalvar.textContent = "Salvar Unidade Curricular";
+    }
 }

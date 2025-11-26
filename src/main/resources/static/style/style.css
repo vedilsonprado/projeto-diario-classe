@@ -453,3 +453,30 @@ body { background-color: var(--color-background-gray); color: var(--color-text-d
 
 .btn-confirm:hover { opacity: 0.9; }
 .btn-cancel:hover { background-color: #bbb; }
+
+/* Estilos de Hierarquia (Edição de UC) */
+.capacity-block {
+    border: 1px solid #ddd;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.capacity-header {
+    display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-end;
+    padding-bottom: 10px; border-bottom: 1px solid #eee;
+}
+
+.criteria-list {
+    padding-left: 15px;
+    border-left: 3px solid var(--color-senai-blue);
+    margin-top: 10px;
+}
+
+.btn-remove-cap {
+    position: absolute; top: 10px; right: 10px;
+    background: transparent; color: #dc3545; border: none; font-size: 1.1em; cursor: pointer;
+}
